@@ -28,17 +28,17 @@ ProcleaveHub is available as a webserver and a stand-alone software package at h
 ## ProtTrans
 You need to prepare the pretrained language model ProtTrans to run ProcleaveHub:  
 Download the pretrained ProtT5-XL-UniRef50 model ([guide](https://github.com/agemagician/ProtTrans)). 
-### Note:
+### note:
 Please change the ProtTrans path in "get_prottrans" and "get_prottrans1" of "feature.py".
 
-## naccess
+## Naccess
 You need to install naccess to run ProcleaveHub:  
 ```unzip naccess.zip```
 ```csh install.scr```
-### Note:
+### note:
 Please change the naccess path in "get_dssp_feature" of "feature.py".
 
-## models
+## Models
 Model in the "prediction" module is available from http://procleavehub.unimelb-biotools.cloud.edu.au/.
 
 ## Usage
