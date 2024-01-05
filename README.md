@@ -1,5 +1,5 @@
 # ProcleaveHub: an AlphaFold2-aware geometric graph learning framwork for protease-specific substrate cleavage site prediction.
-## introduction
+## Introduction
 ProcleaveHub is available as a webserver and a stand-alone software package at http://procleavehub.unimelb-biotools.cloud.edu.au/. Sorry
 
 ## Environment
