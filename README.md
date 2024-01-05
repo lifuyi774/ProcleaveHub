@@ -53,21 +53,21 @@ as follows:
 >python ProcleaveHub.py -h
 
 optional arguments:  
-  --mode    Three modes can be used: prediction, TrainYourModel, UseYourOwnModel, only select one mode each time.  
-  --protease    The protease you want to predict cleavage to, eg:A01.001 Or if you want to build a new model, please create a name. There should no space in the model name.  
-  --chain    A or B  
-  --outputpath    The path of output.  
-  --inputpath    The path of the training set file. Each entry in the training set contains the label, cleavage site position, pdb_id (uniprot accession), and chain type, which are separated by commas.  
-  --test_file    The path of the test set file. Each entry in the training set contains the label, cleavage site position, pdb_id (uniprot accession), and chain type, which are separated by commas.  
-  --pre_file    The path of the pdb file to predict.  
-  --model_file    The path of the model file to deploy.  
-  --pdb_path    The path of the pdb files for the training (test or validation) set.  
-  --inputType    pdb  
-  --batch_size    Batch size  
-  --device    cpu or cuda  
-  --n_epochs    The number of training epoch.  
-  --learning_rate    Learning rate.  
-  --early_stopping    Number of epochs for early stopping.  
+  --mode:        Three modes can be used: prediction, TrainYourModel, UseYourOwnModel, only select one mode each time.  
+  --protease:        The protease you want to predict cleavage to, eg:A01.001 Or if you want to build a new model, please create a name. There should no space in the model name.  
+  --chain:        A or B  
+  --outputpath:        The path of output.  
+  --inputpath:        The path of the training set file. Each entry in the training set contains the label, cleavage site position, pdb_id (uniprot accession), and chain type, which are separated by commas.  
+  --test_file:        The path of the test set file. Each entry in the training set contains the label, cleavage site position, pdb_id (uniprot accession), and chain type, which are separated by commas.  
+  --pre_file:        The path of the pdb file to predict.  
+  --model_file:        The path of the model file to deploy.  
+  --pdb_path:        The path of the pdb files for the training (test or validation) set.  
+  --inputType:        pdb  
+  --batch_size:        Batch size  
+  --device:        cpu or cuda  
+  --n_epochs:        The number of training epoch.  
+  --learning_rate:        Learning rate.  
+  --early_stopping:        Number of epochs for early stopping.  
 
 ## Examples:
 
