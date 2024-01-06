@@ -553,7 +553,7 @@ if __name__ == "__main__":
                 if checkpoint_crf==0:
                     tmp_fasta_file_crf,test_data=read_inputfiles('prediction',args.pre_file,args,args.inputType,crf=True,chain=args.chain)
                     pdbpath=os.path.dirname(args.pre_file)
-                    test_dataset,test_y,_=structure_features(test_data,range(len(test_data)),tmp_fasta_file_crf,args.chain,args.dataset_path,pdbpath, proteasesOne,args)
+                    test_dataset,test_y,new_ids=structure_features(test_data,range(len(test_data)),tmp_fasta_file_crf,args.chain,args.dataset_path,pdbpath, proteasesOne,args)
                     lowess = sm.nonparametric.lowess
                     test_dataset=MyLOWESS(test_dataset,lowess)
                     X_test_feats = [featuresProcess(sentence) for sentence in test_dataset]
@@ -569,7 +569,8 @@ if __name__ == "__main__":
                 checkpoint_crf=1
             # resultDF = pd.DataFrame(pre_scores,columns=['score_0','score_1'])
             resultDF = pd.DataFrame() # for crf's pred results
-            pdbid_pos=list(test_data.keys())
+            # pdbid_pos=list(test_data.keys())
+            pdbid_pos=new_ids
             pdbidL=[v.split('&')[0] for v in pdbid_pos]
             posL=[v.split('&')[1] for v in pdbid_pos]
             # print(model_type)
