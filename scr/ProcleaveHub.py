@@ -230,15 +230,7 @@ def train(n_epochs,model,optimizer,loss_function,train_dataloader,
 def Predict(model,test_loader,graphType='knn',device='cpu',test_loader1=None,test_loader2=None): 
     model=model.to(device)
     model.eval()
-    # with torch.no_grad():
-    #     if graphType=='ensemble':
-    #         out = model(data,data1,data2)
-    #     elif graphType=='PBMLP':    
-    #         out = model(data,data1)
-    #     else:
-    #         out = model(data)
-    #     y_pred = torch.nn.Softmax(dim=1)(out[0]).cpu().detach().numpy()
-    # return y_pred
+
     with torch.no_grad():
         trainresults=[]
         if graphType=='ensemble':
@@ -568,9 +560,12 @@ if __name__ == "__main__":
                 pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
                 checkpoint_crf=1
             # resultDF = pd.DataFrame(pre_scores,columns=['score_0','score_1'])
-            resultDF = pd.DataFrame() # for crf's pred results
-            # pdbid_pos=list(test_data.keys())
-            pdbid_pos=new_ids
+            resultDF = pd.DataFrame() # 
+            if model_type !='CRF':
+                pdbid_pos=new_ids
+            else:
+                pdbid_pos=list(test_data.keys())
+            
             pdbidL=[v.split('&')[0] for v in pdbid_pos]
             posL=[v.split('&')[1] for v in pdbid_pos]
             # print(model_type)
