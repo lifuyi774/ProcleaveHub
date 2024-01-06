@@ -561,7 +561,7 @@ if __name__ == "__main__":
                 checkpoint_crf=1
             # resultDF = pd.DataFrame(pre_scores,columns=['score_0','score_1'])
             resultDF = pd.DataFrame() # 
-            if model_type !='CRF':
+            if model_type =='CRF':
                 pdbid_pos=new_ids
             else:
                 pdbid_pos=list(test_data.keys())
