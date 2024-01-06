@@ -226,19 +226,19 @@ class ProteinGraphDataset(data.Dataset):
                 self.dataset[ID] = dataset[ID]
         self.IDs = list(self.dataset.keys())
         
-        # 加，提取子序列的特征
+
         self.posDict={}
         self.yDict={}
         with open(fasta_file) as r1:
             fasta_ori = r1.readlines()
         for i in range(len(fasta_ori)):
             # if fasta_ori[i][0] == ">":
-            #     name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+            #     name = fasta_ori[i].split('>')[1].replace('\n','') 
                 
             #     seq = fasta_ori[i+1].replace('\n','')
             #     pdbfasta[name] = seq
             if fasta_ori[i][0] == ">":
-                # name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+                # name = fasta_ori[i].split('>')[1].replace('\n','') 
                 descrL=fasta_ori[i].split('>')[1].replace('\n','').split()
                 y=int(descrL[1])
                 pos=int(descrL[0].split('&')[1])
@@ -253,7 +253,7 @@ class ProteinGraphDataset(data.Dataset):
         self.dataset_path = args.dataset_path
         self.feature_path = args.feature_path
         self.fasta_file = fasta_file
-        self.pdb_path =args.pdb_path # 加
+        self.pdb_path =args.pdb_path 
         self.output_prottrans = args.output_prottrans
         self.output_esmfold = args.output_esmfold
         self.output_dssp = args.output_dssp
@@ -283,7 +283,7 @@ class ProteinGraphDataset(data.Dataset):
         name = self.IDs[idx]
         # Uid=name.split('&')[0].split('_')[-1]# uniprotid
         
-        # 提取子序列的dssp feature 加
+        
         pos=self.posDict[name]
         if (pos-10)<0:
             s=0
@@ -294,7 +294,7 @@ class ProteinGraphDataset(data.Dataset):
         with torch.no_grad():
             if not os.path.exists(self.feature_path + name + ".npy"):
                 # print("run_ptottrans")
-                features.get_prottrans(self.fasta_file, self.output_prottrans) #输入改为长度为20的序列
+                features.get_prottrans(self.fasta_file, self.output_prottrans) 
             if not os.path.exists(self.dataset_path + name + ".npy"):
                 # print('run_esmfold1')
                 # features.get_esmfold(self.fasta_file, self.output_esmfold)
@@ -317,12 +317,12 @@ class ProteinGraphDataset(data.Dataset):
             
             
             # prottrans_feat = torch.load(self.feature_path + name + ".tensor")
-            # prottrans_feat = torch.tensor(np.load(self.feature_path + name + ".npy")) # 如何获取子序列的 prottrans? 需要改, (n,1024)
+            # prottrans_feat = torch.tensor(np.load(self.feature_path + name + ".npy")) 
             # try:
             #     prottrans_feat = torch.tensor(np.load(self.feature_path + name + ".npy"))
             # except:
             #     print(name)
-            prottrans_feat = torch.tensor(np.load(self.feature_path + name + ".npy")) # 如何获取子序列的 prottrans? 需要改, (n,1024)
+            prottrans_feat = torch.tensor(np.load(self.feature_path + name + ".npy")) 
             # dssp = torch.tensor(np.load(self.dataset_path + name + "_dssp.npy"))
             dssp = torch.tensor(np.load(self.dataset_path + name + "_dssp.npy"))
             # print(name)
@@ -332,21 +332,16 @@ class ProteinGraphDataset(data.Dataset):
             
             # mask = torch.isfinite(coords.sum(dim=(1,2)))
             # coords[~mask] = np.inf
-            X_ca = coords[:, 1] #取的Ca的坐标
+            X_ca = coords[:, 1] 
             # print("X_ca shape",X_ca.shape,name,pos)
             if self.graph_type =='knn' or self.graph_type =='rball':
                 index_coord_distance=[]
                 for i in range(len(X_ca)):
-                    # 1. 遍历所有ca coord,找到与 P1-CA 原子距离小于10A的所有原子对应的索引。
-                    # d=distance.euclidean(tuple(list(X_ca[p-1])), tuple(list(X_ca[i])))
-                    # try:
-                    #     d=torch.dist(X_ca[pos-1], X_ca[i])
-                    # except:
-                    #     print("X_ca shape",X_ca.shape,name,pos)
+
                     d=torch.dist(X_ca[pos-1], X_ca[i])
                     if d<=10: 
                         index_coord_distance.append(i)
-                # 2. 利用索引从全部的coords数组中提取子coords数组
+               
                 X_ca=X_ca[index_coord_distance]
                 coords=coords[index_coord_distance]
                 prottrans_feat=prottrans_feat[index_coord_distance]
@@ -362,16 +357,13 @@ class ProteinGraphDataset(data.Dataset):
                 seq_new=self.dataset[name][2][s:e]
             # AA_type_ca=AAtype[:,1]
             seq = torch.as_tensor([self.letter_to_num[aa] for aa in seq_new],
-                                  device=self.device, dtype=torch.long) # self.dataset[name][0]  输入序列长度改为20
-            # 构图 加边
-            # edge_index = torch_cluster.knn_graph(X_ca, k=self.top_k) # 利用Ca 原子坐标，获取k近邻来构图，每个节点的30个邻接
-            # edge_index = torch_cluster.radius_graph(X_ca, r=8,max_num_neighbors=10)
+                                  device=self.device, dtype=torch.long) 
             if self.graph_type =='knn':
                 edge_index = knnEdge(X_ca, self.top_k)
             elif self.graph_type =='rball':
                 edge_index = radiusEdge(X_ca,8,10)
             else:
-                edge_index = SequentialEdge(X_ca,device=self.device) # Sequential graph
+                edge_index = SequentialEdge(X_ca,device=self.device)
             
             pos_embeddings = _positional_embeddings(edge_index,device=self.device,num_positional_embeddings=self.num_positional_embeddings)
             E_vectors = X_ca[edge_index[0]] - X_ca[edge_index[1]]
