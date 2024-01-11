@@ -112,7 +112,7 @@ def get_prottrans1(fasta_file,output_path):
     seq_list = []
     with open(fasta_file, "r") as f:
         lines = f.readlines()
-    for line in lines[0:2]:#因只预测一条pdb,所以只需要计算一次
+    for line in lines[0:2]:
         if line[0] == ">":
             # ID_list.append(line[1:-1])
             descrL=line.split('>')[1].replace('\n','').split()
@@ -180,7 +180,7 @@ def calculate_chunk_size(sequence, num_chunks):
     avg_chunk_size = total_length // num_chunks
     remainder = total_length % num_chunks
 
-    # 计算每个chunk的长度，使得每个chunk的长度相差不大
+    
     chunk_sizes = [avg_chunk_size] * num_chunks
     for i in range(remainder):
         chunk_sizes[i] += 1
@@ -200,7 +200,7 @@ def get_pdb_xyz2(pdb_file,ref_seq,chain):
         for line in pdb_file_lines:
             if 'ENDMDL' in line:
                 break
-            # if (line[0:4].strip() == "ATOM" and line[21].strip() =='B') or (line[0:4].strip() == "ATOM" and line[21].strip() =='C'): # 排除其它链
+            # if (line[0:4].strip() == "ATOM" and line[21].strip() =='B') or (line[0:4].strip() == "ATOM" and line[21].strip() =='C'): 
             #     break
             if (line[0:4].strip() == "ATOM" and int(line[22:26].strip()) != current_pos and line[21].strip() ==chain) or line[0:4].strip() == "TER":
                 if current_aa != {}:
@@ -220,14 +220,7 @@ def get_pdb_xyz2(pdb_file,ref_seq,chain):
                     # cuurent_aa1[atom] = aatype
     except:
         return None
-    # # 提取子序列的dssp feature 加
-    # if (pos-10)<0: # 10/15
-    #     s=0
-    # else:
-    #     s=pos-10
-    # e=pos+10
-    # #########
-    # X=X[s:e]
+    
     # print('LEN X',len(X),len(ref_seq))
     if len(X) == len(ref_seq):          
         return np.array(X)#,np.array(X1)
