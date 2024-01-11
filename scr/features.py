@@ -238,7 +238,7 @@ def get_pdb_xyz3(pdb_file,ref_seq,chain):
         for line in pdb_file_lines:
             if 'ENDMDL' in line:
                 break
-            # if (line[0:4].strip() == "ATOM" and line[21].strip() =='B') or (line[0:4].strip() == "ATOM" and line[21].strip() =='C'): # 排除其它链
+            # if (line[0:4].strip() == "ATOM" and line[21].strip() =='B') or (line[0:4].strip() == "ATOM" and line[21].strip() =='C'): 
             #     break
             if (line[0:4].strip() == "ATOM" and int(line[22:26].strip()) != current_pos and line[21].strip() ==chain) or line[0:4].strip() == "TER":
                 if current_aa != {}:
@@ -258,17 +258,10 @@ def get_pdb_xyz3(pdb_file,ref_seq,chain):
                     # cuurent_aa1[atom] = aatype
     except:
         return None
-    # # # 提取子序列的dssp feature 加
-    # if (pos-10)<0: # 10/15
-    #     s=0
-    # else:
-    #     s=pos-10
-    # e=pos+10
-    # # #########
-    # X=X[s:e]
+    
     # print('LEN X',len(X),len(ref_seq))
     if len(X) == len(ref_seq):          
-        return np.array(X)#,np.array(X1)
+        return np.array(X)
     else:
         return None 
 
@@ -305,7 +298,7 @@ def get_coord_feature_for_pre(fasta_file,output_path,pdb_path,protease,chain):
         fasta_ori = r1.readlines()
     for i in range(len(fasta_ori)):
         if fasta_ori[i][0] == ">":
-            # name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+            # name = fasta_ori[i].split('>')[1].replace('\n','') 
             descrL=fasta_ori[i].split('>')[1].replace('\n','').split()
             # y=int(descrL[1])
             # pos=int(descrL[0].split('&')[1])
@@ -329,7 +322,7 @@ def get_coord_feature_for_pre(fasta_file,output_path,pdb_path,protease,chain):
 
 def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
     DSSP = './dssp'
-    def process_dssp2(dssp_file,chain):# pos 裂解位置，加
+    def process_dssp2(dssp_file,chain):
         aa_type = "ACDEFGHIKLMNPQRSTVWY"
         SS_type = "HBEGITSC"
         rASA_std = [115, 135, 150, 190, 210, 75, 195, 175, 200, 170,
@@ -337,13 +330,7 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
 
         with open(dssp_file, "r") as f:
             lines = f.readlines()
-        # 提取子序列的dssp feature 加
-        # if (pos-10)<0: # 10
-        #     s=0
-        # else:
-        #     s=pos-10
-        # e=pos+10
-        #########
+        
         seq = ""
         dssp_feature = []
 
@@ -367,7 +354,7 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
                 ASA = min(100, round(ACC / rASA_std[aa_type.find(aa)] * 100)) / 100
                 dssp_feature.append(np.concatenate((np.array([PHI, PSI, ASA]), SS_vec)))
 
-        return seq, dssp_feature # 子序列的dssp feature seq, dssp_feature
+        return seq, dssp_feature 
 
     def match_dssp2(seq, dssp, ref_seq):
         alignments = pairwise2.align.globalxx(ref_seq, seq)
@@ -383,11 +370,11 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
             if aa == "-":
                 new_dssp.append(padded_item)
             else:
-                new_dssp.append(dssp.pop(0)) # pop 删除list中第一个元素并返回该值
+                new_dssp.append(dssp.pop(0)) 
 
         matched_dssp = []
         for i in range(len(ref_seq)):
-            if ref_seq[i] == "-": # 如果提供的序列中有-，则不append
+            if ref_seq[i] == "-": 
                 continue
             matched_dssp.append(new_dssp[i])
 
@@ -414,8 +401,8 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
             dssp_seq, dssp_matrix = process_dssp2(dssp_path + Uid + ".dssp",chain)
             # dssp_seq, dssp_matrix = process_dssp(dssp_path + ID + ".dssp")
             # print(dssp_seq,ref_seq)
-            if dssp_seq != ref_seq: # 可判断 dssp 解析的seq 和 fasta 输入的seq 是否一致
-                # print('序列不一致：',ID,Uid)
+            if dssp_seq != ref_seq: 
+              
                 dssp_matrix = match_dssp2(dssp_seq, dssp_matrix, ref_seq)
             np.save(dssp_path + ID + "_dssp.npy", transform_dssp2(dssp_matrix))
             # os.system('rm {}.dssp'.format(dssp_path + ID))
@@ -427,29 +414,18 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
     
     pdbfasta = {}
     # posDict={}
-    with open(fasta_file) as r1: # 输入的是全长序列的fasta文件
+    with open(fasta_file) as r1: 
         fasta_ori = r1.readlines()
     for i in range(len(fasta_ori)):
         # if fasta_ori[i][0] == ">":
-        #     name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+        #     name = fasta_ori[i].split('>')[1].replace('\n','') 
             
         #     seq = fasta_ori[i+1].replace('\n','')
         #     pdbfasta[name] = seq
         if fasta_ori[i][0] == ">":
-            # name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+            # name = fasta_ori[i].split('>')[1].replace('\n','') 
             descrL=fasta_ori[i].split('>')[1].replace('\n','').split()
-            # # y=int(descrL[1])
-            # pos=int(descrL[0].split('&')[1])
             
-            # # Uid=descrL[0].split('&')[0].split('_')[-1]# uniprotid
-            # Uid=descrL[0].split('&')[0].split('_')[-1]# uniprotid
-            # if Uid in error_pdbs: #C14001 'P46934-3','Q99590-2'#C14003 ['Q14789','Q8BTI8','P11881','Q63HN8','Q13315','P25054','P42858','P49792','P50851','Q9UQ35']:
-            #     continue
-            # else:
-                # name=descrL[0]
-                # seq = fasta_ori[i+1].replace('\n','')
-                # pdbfasta[name] = seq.replace('-','')
-                # posDict[name]=pos
             name=descrL[0]
             seq = fasta_ori[i+1].replace('\n','')
             pdbfasta[name] = seq#.replace('X','')
@@ -461,7 +437,7 @@ def get_dssp_for_train(fasta_file, pdb_path, dssp_path,protease,chain):
     for name in pdbfasta.keys():
         
         # sign = get_dssp(pdb_path,dssp_path, name ,pdbfasta[name])
-        sign = get_dssp2(pdb_path,dssp_path, name ,pdbfasta[name],chain)# 增加posDict[name] 传pos
+        sign = get_dssp2(pdb_path,dssp_path, name ,pdbfasta[name],chain)
         if sign == None:
             fault_name.append(name)
     if fault_name != []:
@@ -471,7 +447,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
     DSSP = './dssp'
 
 
-    def process_dssp3(dssp_file,chain):# pos 裂解位置，加
+    def process_dssp3(dssp_file,chain):
         aa_type = "ACDEFGHIKLMNPQRSTVWY"
         SS_type = "HBEGITSC"
         rASA_std = [115, 135, 150, 190, 210, 75, 195, 175, 200, 170,
@@ -479,13 +455,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
 
         with open(dssp_file, "r") as f:
             lines = f.readlines()
-        # 提取子序列的dssp feature 加
-        # if (pos-10)<0: # 10
-        #     s=0
-        # else:
-        #     s=pos-10
-        # e=pos+10
-        #########
+        
         seq = ""
         dssp_feature = []
 
@@ -509,7 +479,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
                 ASA = min(100, round(ACC / rASA_std[aa_type.find(aa)] * 100)) / 100
                 dssp_feature.append(np.concatenate((np.array([PHI, PSI, ASA]), SS_vec)))
 
-        return seq, dssp_feature # 子序列的dssp feature seq, dssp_feature
+        return seq, dssp_feature 
 
     def match_dssp3(seq, dssp, ref_seq):
         alignments = pairwise2.align.globalxx(ref_seq, seq)
@@ -525,11 +495,11 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
             if aa == "-":
                 new_dssp.append(padded_item)
             else:
-                new_dssp.append(dssp.pop(0)) # pop 删除list中第一个元素并返回该值
+                new_dssp.append(dssp.pop(0)) 
 
         matched_dssp = []
         for i in range(len(ref_seq)):
-            if ref_seq[i] == "-": # 如果提供的序列中有-，则不append
+            if ref_seq[i] == "-": 
                 continue
             matched_dssp.append(new_dssp[i])
 
@@ -556,8 +526,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
             dssp_seq, dssp_matrix = process_dssp3(dssp_path + Uid + ".dssp",chain)
             # dssp_seq, dssp_matrix = process_dssp(dssp_path + ID + ".dssp")
             # print(dssp_seq,ref_seq)
-            if dssp_seq != ref_seq: # 可判断 dssp 解析的seq 和 fasta 输入的seq 是否一致
-                # print('序列不一致：',ID,Uid)
+            if dssp_seq != ref_seq: 
                 dssp_matrix = match_dssp3(dssp_seq, dssp_matrix, ref_seq)
             np.save(dssp_path + Uid + "_dssp.npy", transform_dssp3(dssp_matrix))
             # os.system('rm {}.dssp'.format(dssp_path + ID))
@@ -569,29 +538,18 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
     
     pdbfasta = {}
     # posDict={}
-    with open(fasta_file) as r1: # 输入的是全长序列的fasta文件
+    with open(fasta_file) as r1: 
         fasta_ori = r1.readlines()
     for i in range(len(fasta_ori)):
         # if fasta_ori[i][0] == ">":
-        #     name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+        #     name = fasta_ori[i].split('>')[1].replace('\n','') 
             
         #     seq = fasta_ori[i+1].replace('\n','')
         #     pdbfasta[name] = seq
         if fasta_ori[i][0] == ">":
-            # name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+            # name = fasta_ori[i].split('>')[1].replace('\n','')
             descrL=fasta_ori[i].split('>')[1].replace('\n','').split()
-            # # y=int(descrL[1])
-            # pos=int(descrL[0].split('&')[1])
             
-            # # Uid=descrL[0].split('&')[0].split('_')[-1]# uniprotid
-            # Uid=descrL[0].split('&')[0].split('_')[-1]# uniprotid
-            # if Uid in error_pdbs: #C14001 'P46934-3','Q99590-2'#C14003 ['Q14789','Q8BTI8','P11881','Q63HN8','Q13315','P25054','P42858','P49792','P50851','Q9UQ35']:
-            #     continue
-            # else:
-                # name=descrL[0]
-                # seq = fasta_ori[i+1].replace('\n','')
-                # pdbfasta[name] = seq.replace('-','')
-                # posDict[name]=pos
             name=descrL[0]
             seq = fasta_ori[i+1].replace('\n','')
             pdbfasta[name] = seq#.replace('X','')
@@ -605,7 +563,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
     # for name in pdbfasta.keys():
         
     #     # sign = get_dssp(pdb_path,dssp_path, name ,pdbfasta[name])
-    #     sign = get_dssp2(pdb_path,dssp_path, name ,pdbfasta[name],chain)# 增加posDict[name] 传pos
+    #     sign = get_dssp2(pdb_path,dssp_path, name ,pdbfasta[name],chain)
     #     if sign == None:
     #         fault_name.append(name)
     # if fault_name != []:
@@ -757,7 +715,7 @@ def get_dssp_feature(fasta_file, pdb_path, dssp_path,protease,chain,args):
             # dssp_seq, dssp_matrix = process_dssp(dssp_path + ID + ".dssp")
             # print(dssp_seq,ref_seq)
             if dssp_seq != ref_seq: 
-                print('序列不一致：',ID)
+                
                 dssp_matrix = match_dssp(dssp_seq, dssp_matrix, ref_seq)
             np.save(dssp_path + ID + "_dssp_crf.npy", transform_dssp(dssp_matrix))
             # os.system('rm {}.dssp'.format(dssp_path + ID))
@@ -811,8 +769,8 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
         e=pos+4
         # for model in structure:
         for chain in structure[0]:
-            if chain.get_id()==chain_id: # 只计算目标链
-                #只计算P4'至P4位置氨基酸
+            if chain.get_id()==chain_id: 
+                
                 chain=list(chain)
                 for residue1 in chain[s:e]:
                     for residue2 in chain[s:e]:
@@ -835,7 +793,7 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
         e=pos+4
         # for model in structure:
         for chain in structure[0]:
-            if chain.get_id()==chain_id:# 只计算目标链
+            if chain.get_id()==chain_id:
                 chain=list(chain)
                 for residue in chain[s:e]:
                     for atom in residue:
@@ -872,12 +830,12 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
     def calculate_protrusion_and_depth_index(structure,chain_id,pos):
         # parser = PDBParser(QUIET=True)
         # structure = parser.get_structure('protein', pdb_file)
-        if (pos-4)<0: # 10
+        if (pos-4)<0: 
             s=0
         else:
             s=pos-4
         e=pos+4
-        # 初始化变量
+        
         protrusion_index = []
         depth_index = []
 
@@ -928,12 +886,10 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
                 chain=list(chain)[s:e]
                 for residue in chain:
                     for atom in residue:
-                        # 获取B-factor值
                         b_factor = atom.get_bfactor()
-                        # 将B-factor添加到列表中
                         b_factors.append(b_factor)
 
-        # 计算平均值和标准差
+        
         # print(b_factors)
         mean_b_factor = np.mean(b_factors)
         # std_dev_b_factor = np.std(b_factors)
@@ -947,13 +903,13 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
     for i in range(len(fasta_ori)):
 
         if fasta_ori[i][0] == ">":
-            # name = fasta_ori[i].split('>')[1].replace('\n','') # 增加 分割name的代码
+            # name = fasta_ori[i].split('>')[1].replace('\n','') 
             descrL=fasta_ori[i].split('>')[1].replace('\n','').split()
             # y=int(descrL[1])
             pos=int(descrL[0].split('&')[1])
 
             Uid=descrL[0].split('&')[0].split('_')[-1]# uniprotid
-            if Uid in []:#error_pdbs+['Q8IVL0','P12270','Q13813','P12270','Q13813','P01514']:
+            if Uid in []:
                 continue
             else:
                 name=descrL[0]
@@ -970,10 +926,10 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
             structure= pdb_parser.get_structure('protein', pdb_path+'/'+str(Uid)+'.pdb')
             if not os.path.exists(pdb_path+'/'+str(Uid)+'.pdb'):
                 print('PDB file not exist!',pdb_path+'/'+str(Uid)+'.pdb')
-            # 计算联系数
+            
             contact_num = calculate_contact_number(structure,chain,posDict[name])
             # print(f"Contact Number: {contact_num}")
-            # 计算Ca和Cb原子的数量
+            
             # print(name)
             upper_ca, lower_ca = calculate_half_sphere_atoms(structure, 'CA',chain,posDict[name])
             upper_cb, lower_cb = calculate_half_sphere_atoms(structure, 'CB',chain,posDict[name])
@@ -985,7 +941,7 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
 
 def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,protease,args,device="cpu"):
     IDs = list(dataset.keys())
-    # 加，提取子序列的特征
+    
     posDict={}
     yDict={}
     for key,value in dataset.items():
@@ -998,7 +954,7 @@ def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,pr
         check_point=0
         pdbid=name.split('&')[0].split('_')[-1]# uniprotid
         # pdbid=name.split('&')[0]
-        # 提取子序列的dssp feature 加
+        
         pos=posDict[name]
         
         if (pos-4)<0:
@@ -1008,7 +964,7 @@ def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,pr
         e=pos+4
         #########
         with torch.no_grad():
-            if not os.path.exists(feature_path + pdbid + "_dssp_crf.npy") or not os.path.exists(feature_path + pdbid + "_naccess.pkl"):# 计算的是全长序列对应的dssp 特征，下面需要提取子序列的dssp 特征
+            if not os.path.exists(feature_path + pdbid + "_dssp_crf.npy") or not os.path.exists(feature_path + pdbid + "_naccess.pkl"):
                 # print('run_get_dssp')
                 # features.get_dssp(self.fasta_file, self.output_esmfold, self.output_dssp)
                 get_dssp_feature(fasta_file, pdb_path, feature_path,protease,chain,args)
