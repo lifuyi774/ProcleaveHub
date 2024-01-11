@@ -2,6 +2,9 @@
 ## Introduction
 ProcleaveHub is available as a webserver and a stand-alone software package at http://procleavehub.unimelb-biotools.cloud.edu.au/.
 
+### note:
+Due to limitations of third-party tools, ProcleaveHub is currently only supported on Linux systems.
+
 ## Environment
 * Anaconda
 * python 3.7.13
@@ -41,7 +44,9 @@ Please change the naccess path in "get_dssp_feature" of "feature.py".
 Model in the "prediction" module is available from http://procleavehub.unimelb-biotools.cloud.edu.au/.
 
 ```cd ProcleaveHub```
+
 ```unzip models.zip```
+
 ## Usage
 
 To get the information the user needs to enter for help, run:
