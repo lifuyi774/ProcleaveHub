@@ -39,6 +39,7 @@ Please change the naccess path in "get_dssp_feature" of "feature.py".
 
 ## Models
 Model in the "prediction" module is available from http://procleavehub.unimelb-biotools.cloud.edu.au/.
+
 ```cd ProcleaveHub```
 ```unzip models.zip```
 ## Usage
