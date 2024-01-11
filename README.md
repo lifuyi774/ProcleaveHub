@@ -32,7 +32,7 @@ Download the pretrained ProtT5-XL-UniRef50 model ([guide](https://github.com/age
 Please change the ProtTrans path in "get_prottrans" and "get_prottrans1" of "feature.py".
 
 ## Naccess
-You need to install naccess ([guide](http://www.bioinf.manchester.ac.uk/naccess/)) to run ProcleaveHub: 
+You need to install naccess ([guide](http://www.bioinf.manchester.ac.uk/naccess/)) to run ProcleaveHub.
 
 ### note:
 Please change the naccess path in "get_dssp_feature" of "feature.py".
