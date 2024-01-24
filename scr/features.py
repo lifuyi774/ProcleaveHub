@@ -569,7 +569,7 @@ def get_dssp_for_pre(fasta_file, pdb_path, dssp_path,protease,chain):
     # if fault_name != []:
     #     np.save(dssp_path+'dssp_fault.npy',fault_name)
 
-def get_dssp_feature(fasta_file, pdb_path, dssp_path,protease,chain,args):
+def get_dssp_feature(fasta_file, pdb_path, dssp_path,protease,chain,args,ispre):
     temp_path_naccess=args.outputpath+'/naccess'
     os.makedirs(temp_path_naccess, exist_ok=True)
     DSSP = './dssp'
@@ -741,7 +741,11 @@ def get_dssp_feature(fasta_file, pdb_path, dssp_path,protease,chain,args):
 
     fault_name = []
     for name in pdbfasta.keys():
-        Uid=name.split('&')[0].split('_')[-1]
+        # Uid=name.split('&')[0].split('_')[-1]
+        if ispre==False:
+            Uid=name.split('&')[0].split('_')[-1]
+        else:
+            Uid=name.split('&')[0]
         if not os.path.exists(dssp_path + Uid + "_dssp_crf.npy"):
             sign = get_dssp(pdb_path+'/'+str(Uid)+'.pdb',dssp_path, Uid ,pdbfasta[name],chain)
             if sign == None:
@@ -758,7 +762,7 @@ def get_dssp_feature(fasta_file, pdb_path, dssp_path,protease,chain,args):
     if fault_name != []:
         np.save(dssp_path+'dssp_fault.npy',fault_name)
     
-def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
+def get_other_feature(fasta_file, pdb_path, output_path,protease,chain,ispre):
 
     def calculate_contact_number(structure,chain_id,pos, threshold=10.0):
         contact_number = 0
@@ -922,7 +926,12 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
         
         
         if not os.path.exists(output_path + name + "_other.npy"):
-            Uid=name.split('&')[0].split('_')[-1]
+            # Uid=name.split('&')[0].split('_')[-1]
+            if ispre==False:
+                Uid=name.split('&')[0].split('_')[-1]
+            else:
+                Uid=name.split('&')[0]
+            
             structure= pdb_parser.get_structure('protein', pdb_path+'/'+str(Uid)+'.pdb')
             if not os.path.exists(pdb_path+'/'+str(Uid)+'.pdb'):
                 print('PDB file not exist!',pdb_path+'/'+str(Uid)+'.pdb')
@@ -939,7 +948,7 @@ def get_other_feature(fasta_file, pdb_path, output_path,protease,chain):
             Other_features=np.array([contact_num, upper_ca, lower_ca, upper_cb, lower_cb,packing_score,mean_b_factor]+protrusion_values+depth_values)
             np.save(output_path + name + "_other.npy", Other_features)
 
-def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,protease,args,device="cpu"):
+def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,protease,args,ispre,device="cpu"):
     IDs = list(dataset.keys())
     
     posDict={}
@@ -952,9 +961,12 @@ def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,pr
     new_IDs=[]
     for name in IDs:
         check_point=0
-        pdbid=name.split('&')[0].split('_')[-1]# uniprotid
+        # pdbid=name.split('&')[0].split('_')[-1]# uniprotid
         # pdbid=name.split('&')[0]
-        
+        if ispre==False:
+            pdbid=name.split('&')[0].split('_')[-1]
+        else:
+            pdbid=name.split('&')[0]
         pos=posDict[name]
         
         if (pos-4)<0:
@@ -967,9 +979,9 @@ def structure_features(dataset, index, fasta_file,chain,feature_path,pdb_path,pr
             if not os.path.exists(feature_path + pdbid + "_dssp_crf.npy") or not os.path.exists(feature_path + pdbid + "_naccess.pkl"):
                 # print('run_get_dssp')
                 # features.get_dssp(self.fasta_file, self.output_esmfold, self.output_dssp)
-                get_dssp_feature(fasta_file, pdb_path, feature_path,protease,chain,args)
+                get_dssp_feature(fasta_file, pdb_path, feature_path,protease,chain,args,ispre)
             if not os.path.exists(feature_path + name + "_other.npy"):
-                # features.get_dssp(self.fasta_file, self.output_esmfold, self.output_dssp)
+                # features.get_dssp(self.fasta_file, self.output_esmfold, self.output_dssp,ispre)
                 get_other_feature(fasta_file, pdb_path,feature_path,protease,chain)
             with open(feature_path + pdbid + "_naccess.pkl", 'rb') as file:
                 naccess = pickle.load(file)
