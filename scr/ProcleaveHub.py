@@ -475,7 +475,8 @@ if __name__ == "__main__":
                 try:
                     with open('../models/{}/crf.pkl'.format(proteasesOne), 'rb') as f:  #read byte
                         crf = pickle.load(f)
-                    y_pred = crf.predict(X_test_feats)
+                    # y_pred = crf.predict(X_test_feats)
+                    y_pred = crf.predict_marginals(X_test_feats)
                 except:
                     print(f'The model of {proteasesOne} failed to load, please select another type of protease!')
                     sys.exit(1)
