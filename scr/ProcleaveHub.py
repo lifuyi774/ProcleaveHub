@@ -481,7 +481,8 @@ if __name__ == "__main__":
                     print(f'The model of {proteasesOne} failed to load, please select another type of protease!')
                     sys.exit(1)
                 model_type='CRF'
-                pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
+                # pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
+                pre_scores =[round(float(item['1']),3) for sublist in y_pred for item in sublist]
                 checkpoint_crf=1
             resultDF = pd.DataFrame() # 
             if model_type =='CRF':
