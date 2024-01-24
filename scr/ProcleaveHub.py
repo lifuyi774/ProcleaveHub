@@ -728,9 +728,10 @@ if __name__ == "__main__":
                 pre_dataset,pre_y,_=structure_features(pre_data,range(len(pre_data)),tmp_fasta_file,args.chain,args.dataset_path,pdbpath, protease,args,True)
                 pre_dataset==MyLOWESS(pre_dataset,lowess)
                 X_pre_feats=[featuresProcess(sentence) for sentence in pre_dataset]
-                y_pred = best_crf.predict(X_pre_feats)
-                pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
-
+                # y_pred = best_crf.predict(X_pre_feats)
+                # pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
+                y_pred = best_crf.predict_marginals(X_pre_feats)
+                pre_scores =[round(float(item['1']),3) for sublist in y_pred for item in sublist]
             pdbid_pos=list(pre_data.keys())
             resultDF1 = pd.DataFrame()
             pdbidL=[v.split('&')[0] for v in pdbid_pos]
@@ -837,8 +838,10 @@ if __name__ == "__main__":
             X_pre_feats=[featuresProcess(sentence) for sentence in pre_dataset]
             with open(args.model_file, 'rb') as f: 
                 best_crf = pickle.load(f)
-            y_pred = best_crf.predict(X_pre_feats)
-            pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
+            # y_pred = best_crf.predict(X_pre_feats)
+            # pre_scores =[int(item[0]) for sublist in y_pred for item in sublist]
+            y_pred = best_crf.predict_marginals(X_pre_feats)
+            pre_scores =[round(float(item['1']),3) for sublist in y_pred for item in sublist]
         else:
             print('Please provide the original model file(the output of the TrainYourModel module)!')
             sys.exit(1)
