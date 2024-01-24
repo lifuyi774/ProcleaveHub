@@ -468,7 +468,7 @@ if __name__ == "__main__":
                 if checkpoint_crf==0:
                     tmp_fasta_file_crf,test_data=read_inputfiles('prediction',args.pre_file,args,args.inputType,crf=True,chain=args.chain)
                     pdbpath=os.path.dirname(args.pre_file)
-                    test_dataset,test_y,new_ids=structure_features(test_data,range(len(test_data)),tmp_fasta_file_crf,args.chain,args.dataset_path,pdbpath, proteasesOne,args)
+                    test_dataset,test_y,new_ids=structure_features(test_data,range(len(test_data)),tmp_fasta_file_crf,args.chain,args.dataset_path,pdbpath, proteasesOne,args,True)
                     lowess = sm.nonparametric.lowess
                     test_dataset=MyLOWESS(test_dataset,lowess)
                     X_test_feats = [featuresProcess(sentence) for sentence in test_dataset]
@@ -616,11 +616,11 @@ if __name__ == "__main__":
             print('Failed to train PBMLP model!')
         # training CRF 
         if args.test_file != None:
-            test_dataset_crf,test_y_crf,testdata_ids=structure_features(test_data,range(len(test_data)),test_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args)
-            train_dataset_crf,train_y_crf,traindata_ids=structure_features(train_data,range(len(train_data)),train_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args)
+            test_dataset_crf,test_y_crf,testdata_ids=structure_features(test_data,range(len(test_data)),test_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args,False)
+            train_dataset_crf,train_y_crf,traindata_ids=structure_features(train_data,range(len(train_data)),train_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args,False)
             # testdata_ids=list(test_data.keys())
         else:
-            data_x,data_y,data_ids=structure_features(inputdata_,range(len(inputdata_)),input_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args)
+            data_x,data_y,data_ids=structure_features(inputdata_,range(len(inputdata_)),input_fasta_file_,args.chain,args.dataset_path,args.pdb_path, protease,args,False)
             train_indices,test_indices=split_dataset(data_ids)
             train_dataset_crf, test_dataset_crf = data_x[train_indices], data_x[test_indices]
             train_y_crf, test_y_crf = data_y[train_indices], data_y[test_indices]
@@ -725,7 +725,7 @@ if __name__ == "__main__":
                 pre_scores=Predict(model,pre_dataloader_PBMLP,graphType='PBMLP')
             elif max_Gtype =='CRF':
                 pdbpath=os.path.dirname(args.pre_file)
-                pre_dataset,pre_y,_=structure_features(pre_data,range(len(pre_data)),tmp_fasta_file,args.chain,args.dataset_path,pdbpath, protease,args)
+                pre_dataset,pre_y,_=structure_features(pre_data,range(len(pre_data)),tmp_fasta_file,args.chain,args.dataset_path,pdbpath, protease,args,True)
                 pre_dataset==MyLOWESS(pre_dataset,lowess)
                 X_pre_feats=[featuresProcess(sentence) for sentence in pre_dataset]
                 y_pred = best_crf.predict(X_pre_feats)
@@ -832,7 +832,7 @@ if __name__ == "__main__":
             tmp_fasta_file,pre_data=read_inputfiles('prediction',args.pre_file,args,args.inputType,crf=True,chain=args.chain)
             lowess = sm.nonparametric.lowess
             pdbpath=os.path.dirname(args.pre_file)
-            pre_dataset,pre_y,_=structure_features(pre_data,range(len(pre_data)),tmp_fasta_file,args.chain,args.dataset_path,pdbpath, protease,args)
+            pre_dataset,pre_y,_=structure_features(pre_data,range(len(pre_data)),tmp_fasta_file,args.chain,args.dataset_path,pdbpath, protease,args,True)
             pre_dataset==MyLOWESS(pre_dataset,lowess)
             X_pre_feats=[featuresProcess(sentence) for sentence in pre_dataset]
             with open(args.model_file, 'rb') as f: 
