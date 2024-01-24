@@ -217,8 +217,8 @@ def read_inputfiles(mode,inputfile,args,inputType=None,crf=None,chain='A',dataTy
             
             # chain = {record.id: record.seq for record in SeqIO.parse(pdb_file, 'pdb-atom')}
             chainSeq = {str(record.id).split(':')[-1]: str(record.seq) for record in SeqIO.parse(inputfile, 'pdb-atom')}
-            pdbid, ext = os.path.splitext(filename)
-            
+            # pdbid, ext = os.path.splitext(filename)
+            pdbid ='.'.join(filename.split('.')[:-1])
             seq=chainSeq[chain]
             seq=re.sub('[^ACDEFGHIKLMNPQRSTVWYX]', 'X', ''.join(seq).upper())
             if crf==None: 
