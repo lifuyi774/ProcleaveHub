@@ -17,7 +17,7 @@ def y_trueTOnumpy(y_t):
     return y_validDf.values
 
 def split_dataset(data, test_size=0.2, random_state=42):
-    # 将样本id按照pdbid分组
+    
     sample_ids=list(data.keys())
     Y=np.array([int(data[k][1]) for k in list(data.keys())])
     grouped_samples = {}
@@ -28,11 +28,11 @@ def split_dataset(data, test_size=0.2, random_state=42):
             grouped_samples[pdbid] = []
         grouped_samples[pdbid].append(i)
 
-    # 初始化训练集和测试集的索引
+    
     train_indices = []
     test_indices = []
 
-    # 针对每个pdbid的样本分配到训练集或测试集
+    
     for pdbid, indices in grouped_samples.items():
         if len(indices) > 1:
             test_ratio=(len(test_indices)/len(sample_ids))
@@ -42,10 +42,10 @@ def split_dataset(data, test_size=0.2, random_state=42):
             else:
                 train_indices.extend(indices)
 
-    # 根据已划分好的训练集和测试集的比例，将只有一个样本的pdbid加入到训练集或测试集
+    
     for pdbid, indices in grouped_samples.items():
         if len(indices) == 1:
-            # 如果该pdbid只有一个样本，根据当前训练集和测试集的正负标签比例决定加入到训练集或测试集
+            
             single_sample_index = indices[0]
             single_sample_label = Y[single_sample_index]
             
@@ -66,15 +66,12 @@ def split_dataset(data, test_size=0.2, random_state=42):
                 else:
                     train_indices.extend(indices)
 
-    # 根据索引获取划分后的数据集
-    # X_train, X_test = X[train_indices], X[test_indices]
-    # Y_train, Y_test = Y[train_indices], Y[test_indices]
-    # test_ids=[sample_ids[i] for i in test_indices]
-    return train_indices,test_indices#X_train, X_test, Y_train, Y_test,test_ids
+
+    return train_indices,test_indices
 
 def get_train_valid(in_file,in_data,train_indices,valid_indices,args):
     ids_=list(in_data.keys())
-    # 将样本id按照pdbid分组
+   
     grouped_samples = {}
     for i, sample_id in enumerate(ids_):
         # pdbid = sample_id.split("_")[0]
@@ -128,7 +125,11 @@ def MyLOWESS(dataset,lowess):
     x_values=[i for i in range(dataset.shape[1])]
     data=[]
     for i in range(dataset.shape[0]):
-        data.append(lowess(list(dataset[i]),x_values, frac=0.05, it=3,return_sorted=False))
+        sorted_list_with_index=sorted(enumerate(list(dataset[i])), key=lambda x: x[1])
+        sorted_indexes, sorted_values = zip(*sorted_list_with_index)
+        resorted_list_lowess = np.array([list(lowess(list(sorted_values),x_values, frac=0.05, it=3,return_sorted=False))[sorted_indexes.index(index)] for index in range(dataset[i].shape[0])])
+        data.append(resorted_list_lowess)
+        
     return np.vstack(data)
 def calculate_se_sp(labels, scores, cutoff=0.5, po_label=1):
     tp, tn, fp, fn = 0, 0, 0, 0
@@ -151,7 +152,7 @@ def calculate_se_sp(labels, scores, cutoff=0.5, po_label=1):
     return Sensitivity,Specificity
 
 def train_crf(X_train, y_train):
-    # 定义CRF模型
+    
 
     crf = CRF(
         algorithm='lbfgs',
@@ -174,18 +175,18 @@ def k_fold_cross_validation(X, y, k=5):
         X_train, X_valid = X[train_index], X[test_index]
         y_train, y_valid = np.array(y)[train_index], np.array(y)[test_index]
 
-        # 提取训练数据的特征和标签
+        
         X_train_feats = [featuresProcess(sentence) for sentence in X_train]
         y_train_labels = [str(label) for label in y_train]
         
         X_valid_feats = [featuresProcess(sentence) for sentence in X_valid]
         # y_valid_labels = [str(label) for label in y_test]
 
-        # 训练CRF模型
+        
         crf = train_crf(X_train_feats, y_train_labels)
         models.append(crf)
 
-        # 在验证集上评估性能
+
         y_pred = crf.predict(X_valid_feats)
         y_pred_flat = [int(item[0]) for sublist in y_pred for item in sublist]
         
